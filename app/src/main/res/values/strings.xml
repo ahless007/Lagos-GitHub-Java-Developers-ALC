@@ -2,4 +2,7 @@
     <string name="app_name">Lagos GitHub Java Developers</string>
     <string name="username">Alexander Garuba</string>
     <string name="share">Share</string>
+    <string name="usertitle">Username:</string>
+    <string name="userprofilelink">GitHub Profile Link</string>
+    <string name="refresh">Refresh</string>
 </resources>

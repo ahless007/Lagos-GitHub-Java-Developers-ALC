@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -23,10 +24,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks  {
 
     ProgressBar progress;
+    Button buttonReload;
     ArrayList<UserData> arrayList;
     ListView listForMainActivity;
 
-    private static final String GITHUB_URL = "https://api.github.com/search/users?q=location:Lagos+language:Java";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         listForMainActivity = (ListView) findViewById(R.id.listView);
 
-        //Listener for the list to listen to click and launch another activity  using explicit intent
+        //Onclicklistener for the listview to show more details about thee developer when touched
         listForMainActivity.setOnItemClickListener( new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> listView, View v, int position, long id) {
-                Object o = listForMainActivity.getItemAtPosition(position);
+                Object gith = listForMainActivity.getItemAtPosition(position);
 
-                UserData user = (UserData) o;
+                UserData user = (UserData) gith;
 
                 Intent intent = new Intent(MainActivity.this, UsersInfo.class);
                 intent.putExtra("userId", user.getGitUserName());
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         });
 
-        //Start the asynchronous task of fetching data from  github if there is connection
+        //Start the connection to github api if there is internet
         isThereConnection();
     }
 
@@ -64,11 +65,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(Loader loader, Object o) {
+    public void onLoadFinished(Loader loader, Object gith) {
         progress=(ProgressBar) findViewById(R.id.spinner);
         progress.setIndeterminate(false);
         progress.setVisibility(View.GONE);
-        String git = (String) o;
+        String git = (String) gith;
         getUserInfoFromJson(git);
         setListAdapter();
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
 
-    //parse the Json String and populate the arrayList accordingly
+    //Using JSON String to populate the Arraylist with developers from github
     private void getUserInfoFromJson(String gitHubJson){
         try{
             JSONObject root = new JSONObject(gitHubJson);
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-    //Bind the arrayList  to the listForMainActivity using the custom GitUserAdapter class
+    //Bind the arrayList to the listForMainActivity using the custom GitUserAdapter class
     private void setListAdapter(){
 
         GitUserAdapter adapter = new GitUserAdapter (getApplicationContext(),R.layout.activity_users_list,arrayList);
@@ -119,17 +120,55 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             progress=(ProgressBar) findViewById(R.id.spinner);
             progress.setIndeterminate(true);
             progress.setVisibility(View.VISIBLE);
+
+            buttonReload = (Button) findViewById(R.id.reloadbutton);
+            buttonReload.setVisibility(View.GONE);
         }
         else{
 
             TextView noConnectionState=(TextView) findViewById(R.id.noInternetConnection);
             noConnectionState.setText("No Internet Connection");
-            progress=(ProgressBar) findViewById(R.id.spinner);
+            progress =(ProgressBar) findViewById(R.id.spinner);
             progress.setIndeterminate(true);
             progress.setVisibility(View.GONE);
 
+            buttonReload = (Button) findViewById(R.id.reloadbutton);
+            buttonReload.setVisibility(View.VISIBLE);
+
         }
 
+
+    }
+
+    public void Reload(View view){
+
+        ConnectivityManager connection = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connection.getActiveNetworkInfo();
+        if(networkInfo!=null && networkInfo.isConnected()){
+
+            getLoaderManager().initLoader(1,null,this).forceLoad();
+            progress=(ProgressBar) findViewById(R.id.spinner);
+            progress.setIndeterminate(true);
+            progress.setVisibility(View.VISIBLE);
+
+            buttonReload = (Button) findViewById(R.id.reloadbutton);
+            buttonReload.setVisibility(View.GONE);
+
+            TextView noConnectionState=(TextView) findViewById(R.id.noInternetConnection);
+            noConnectionState.setVisibility(View.GONE);
+        }
+        else{
+
+            TextView noConnectionState=(TextView) findViewById(R.id.noInternetConnection);
+            noConnectionState.setText("No Internet Connection");
+            progress =(ProgressBar) findViewById(R.id.spinner);
+            progress.setIndeterminate(true);
+            progress.setVisibility(View.GONE);
+
+            buttonReload = (Button) findViewById(R.id.reloadbutton);
+            buttonReload.setVisibility(View.VISIBLE);
+
+        }
 
     }
 

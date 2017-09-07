@@ -3,9 +3,10 @@ package com.github.api.lagosgithubjavadevelopers;
 import android.content.Context;
 import android.content.AsyncTaskLoader;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 
 /**
  * Created by Garuba Alex Samuel on 29-08-2017.
@@ -19,16 +20,17 @@ public class GithubLoader extends AsyncTaskLoader<String> {
         super(context);
     }
 
+    // Using OkHTTP library for grabbing content from github api
     @Override
     public String loadInBackground(){
 
         try{
 
-            OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder().url(GITHUB_URL).build();
-            Response response = client.newCall(request).execute();
-            String result = response.body().string();
-            return result;
+            OkHttpClient loadJson = new OkHttpClient();
+            Request requestData = new Request.Builder().url(GITHUB_URL).build();
+            Response responseJson = loadJson.newCall(requestData).execute();
+            String resultJson = responseJson.body().string();
+            return resultJson;
 
         }
 

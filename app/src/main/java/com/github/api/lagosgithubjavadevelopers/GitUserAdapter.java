@@ -30,7 +30,7 @@ public class GitUserAdapter extends ArrayAdapter<UserData> {
         this.resource = resource;
     }
 
-    // Call xml file inside Adapter for each listView row(Use of layoutInflater inside Adapter)
+    // Using layoutinflater to popukate listview
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
 
